@@ -1,5 +1,10 @@
 # "Libretime" Multi-container Docker Setup.
 
+***NOTE:*** This is a fork to maintain a stable but uptodat config for NMT KTECH
+
+
+---
+
 This is a multi-container Docker build of the Libretime Radio Broadcast Software _(Libretime is a direct fork of Airtime for those who are wondering, hence the similarities)_.
 
 It's an aim to run the environment ready for production which can be stood up in a few minutes (with ease), and all common media directories, database files, auto-dj icecast fallback support etc is mapped into the container(s) so data is persisted between rebuilds of the application.

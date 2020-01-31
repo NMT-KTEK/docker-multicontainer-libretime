@@ -16,7 +16,8 @@ SCRIPT_PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 BACKGROUND_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/img/background-testing-3.jpg"
 rm -rf "$BACKGROUND_FILE"
-cp "$SCRIPT_PWD/login-background.jpg" "$BACKGROUND_FILE"
+#cp "$SCRIPT_PWD/login-background.jpg" "$BACKGROUND_FILE"
+cp "$SCRIPT_PWD/Fiverr(3).jpg" "$BACKGROUND_FILE"
 chown www-data:www-data "$BACKGROUND_FILE"
 
 
@@ -30,11 +31,62 @@ CSS_STRING='<link href="/css/radio-page/custom.css" rel="stylesheet" type="text/
 if ! grep -q "$CSS_STRING" "$HOMEPAGE_TEMPLATE"
 then
     # Only add in CSS if it's not yet in the file...
+    # adding at end (no <html> or <head> /<body> tags in this one)
+    echo "BOOTSTRAP: Patching hompage CSS"
     echo "$CSS_STRING" >> "$HOMEPAGE_TEMPLATE"
 fi
 
 cp "$SCRIPT_PWD/login-custom.css" "$CSS_CUSTOM_FILE"
 chown www-data:www-data "$CSS_CUSTOM_FILE"
+
+# EDIT HOPAGE EMBEDED PLAYER CSS
+
+PLAYER_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/embed/player.phtml"
+CSS_CUSTOM_PLAYER_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/custom_player.css"
+CSS_STRING_PLAYER='<link href="/css/radio-page/custom_player.css" rel="stylesheet" type="text/css" />'
+
+if ! grep -q "$CSS_STRING_PLAYER" "$PLAYER_TEMPLATE"
+then
+    # Only add in CSS if it's not yet in the file...
+    # adding at line 368
+    echo "BOOTSTRAP: Patching player CSS"
+    sed -i "368i\ \n $CSS_STRING_PLAYER" "$PLAYER_TEMPLATE"
+fi
+
+cp "$SCRIPT_PWD/player-custom.css" "$CSS_CUSTOM_PLAYER_FILE"
+chown www-data:www-data "$CSS_CUSTOM_PLAYER_FILE"
+
+# EDIT HOPAGE EMBEDED SCHEDULE CSS
+
+SCHEDULE_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/embed/weekly-program.phtml"
+CSS_CUSTOM_SCHEDULE_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/custom_schedule.css"
+CSS_STRING_SCHEDULE='<link href="/css/radio-page/custom_schedule.css" rel="stylesheet" type="text/css" />'
+
+if ! grep -q "$CSS_STRING_SCHEDULE" "$SCHEDULE_TEMPLATE"
+then
+    # Only add in CSS if it's not yet in the file...
+    # adding at line 75
+    echo "BOOTSTRAP: Patching schedule CSS"
+    sed -i "75i\ \n $CSS_STRING_SCHEDULE" "$SCHEDULE_TEMPLATE"
+fi
+
+cp "$SCRIPT_PWD/schedule-custom.css" "$CSS_CUSTOM_SCHEDULE_FILE"
+chown www-data:www-data "$CSS_CUSTOM_SCHEDULE_FILE"
+
+# PATCH player bar images
+
+PLAYER_IMAGE_FOLDER="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/img"
+
+declare -a img_arr=("play" "pause" "schedule" "about_us" "podcast" "rss" "login" "login-small")
+
+echo '\nBOOTSTRAP: Patching homepage images'
+for i in "${img_arr[@]}"
+do
+    IMAGE_TO_COPY="$SCRIPT_PWD/homepage_img/"$i"_custom.png"
+    IMAGE_DEST="$PLAYER_IMAGE_FOLDER/"$i".png"
+    echo "BOOTSTRAP: copy $IMAGE_TO_COPY --> $IMAGE_DEST"
+    cp "$IMAGE_TO_COPY" "$IMAGE_DEST"
+done
 
 
 

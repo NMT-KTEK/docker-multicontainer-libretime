@@ -1,0 +1,11 @@
+.schedule .tabs li {
+    background-color: rgba(254, 137, 28, 1.0);
+}
+
+.schedule .tabs li.active {
+    background-color: rgb(234, 21, 8);
+}
+
+.schedule .tabs li:hover, .schedule .tabs li.active:hover {
+    background-color: rgb(237, 29, 61);
+}

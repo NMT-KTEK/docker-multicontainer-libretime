@@ -18,6 +18,14 @@ RUN apk add --update \
         mailcap && \
     rm -rf /var/cache/apk/*
 
+# to get better logging
+RUN apk add \
+        python \
+        py-pip \
+        openssl \
+        ca-certificates && \
+    pip install supervisor-stdout
+
 # Copy in custom release of our icecast.xml (by default)...
 COPY config/icecast.xml config/ezstream_mp3.xml /etc/
 COPY bootstrap/* /

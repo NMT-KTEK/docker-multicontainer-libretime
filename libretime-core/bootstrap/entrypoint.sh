@@ -65,11 +65,11 @@ if [ ! -f "$AIRTIME_CONFIG_FILE" ]; then
     setConfigFromEnvironments && apacheFixes && customisations && fqdnFixes
 
     # Start everything up :)
-    /usr/bin/supervisord
+    /usr/bin/supervisord -n
 else
     # Check (and update if required) any config based on environment variables..
     setConfigFromEnvironments && apacheFixes && customisations && fqdnFixes
 
     # We're already installed - just run supervisor..
-    /usr/bin/supervisord
+    /usr/bin/supervisord -n
 fi

@@ -1,0 +1,13 @@
+#premium_player .bottom_bar .play {
+    background-color: rgb(77, 73, 64);
+    /* background-image: linear-gradient(rgba(254, 137, 28, 0.4), rgba(254, 137, 28, 0.4)), url('img/play.png'); */
+}
+
+#premium_player .bottom_bar .pause{
+    background-color: rgb(77, 73, 64);
+    /* background-image: linear-gradient(rgba(254, 137, 28, 0.4), rgba(254, 137, 28, 0.4)), url('img/pause.png'); */
+}
+
+#premium_player .bottom_bar .cont_btn:hover {
+    background-color: rgb(234, 21, 8);
+}

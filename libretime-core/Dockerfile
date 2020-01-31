@@ -1,6 +1,6 @@
 FROM ubuntu:xenial
 
-LABEL maintainer="david@nedved.com.au"
+LABEL maintainer="ktek.club@npe.nmt.edu"
 LABEL description="A multi-container deployment of the Libretime Radio Broadcast Server, PostgreSQL, Icecast2 & RabbitMQ, based on Ubuntu Xenial & Alpine Linux!"
 
 ## General components we need in this container...
@@ -50,15 +50,25 @@ RUN apt-get install -y \
         php-bcmath \
         php-mbstring
 
+ENV LIBRETIME_GIT_REPO=https://github.com/NMT-KTECH/libretime.git
+
+#ENV LIBRETIME_BRANCH=3.0.0-alpha.8
+ENV LIBRETIME_BRANCH=ktech-stable
+
+
 # Pull down libretime sources
+ARG LIBRETIME_VER=3.0.0.alpha.ktech_stable
 RUN export DEBIAN_FRONTEND=noninteractive && \
-    git clone --depth=1 https://github.com/ned-kelly/libretime.git /opt/libretime && \
+    git clone --depth=1 --branch ${LIBRETIME_BRANCH} --single-branch ${LIBRETIME_GIT_REPO}  /opt/libretime && \
     SYSTEM_INIT_METHOD=`readlink --canonicalize -n /proc/1/exe | rev | cut -d'/' -f 1 | rev` && \
     sed -i -e 's/\*systemd\*)/\*'"$SYSTEM_INIT_METHOD"'\*)/g' /opt/libretime/install && \
     echo "SYSTEM_INIT_METHOD: [$SYSTEM_INIT_METHOD]" && \
     #
     # We need to patch Liquidsoap for 1.3.x support (the current libretime builds only has 1.1.1 support)... 
-    cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3.0.patch | patch -p1 && \
+    # for < 3.0.0-alpha.7
+    #cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3.0.patch | patch -p1 && \
+    # for >= 3.0.0-alpha.7
+    cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3-for-3.0.0-alpha.7.patch | patch -p1 && \
     bash -c 'cd /opt/libretime; ./install --distribution=ubuntu --release=xenial_docker_minimal --force --apache --no-postgres --no-rabbitmq; exit 0'; exit 0
 
 # This will be mapped in with all the media...
@@ -95,7 +105,6 @@ RUN git clone https://github.com/x42/silan.git /opt/silan && \
 # SEE: https://github.com/LibreTime/libretime/issues/192 - For further details around this.
 
 RUN apt-get remove liquidsoap -y && \
-
     # install system packages like opam (the make tools are for the 1.3.x+scm install below)
     apt-get install ocaml ocaml-native-compilers camlp4-extra opam autotools-dev automake -y && \
     #
@@ -117,11 +126,16 @@ RUN apt-get remove liquidsoap -y && \
     #
     su - liquidsoap -c "eval `opam config env --root=/usr/local/opam` \
         export OPAMYES=yes && opam depext alsa cry fdkaac lame liquidsoap mad opus taglib vorbis --yes ; \
-        export OPAMYES=yes && opam install alsa cry fdkaac lame liquidsoap mad opus taglib vorbis --yes" && \
-    
+        export OPAMYES=yes && opam install alsa cry fdkaac lame liquidsoap mad opus taglib vorbis --yes" && \  
     # run this as root to make liquidsoap your default on the whole system (extremely hacky)
     echo "eval \`opam config env --root=/usr/local/opam\`" > /etc/profile.d/liquidsoap-opam.sh && \
     ln -s /usr/local/opam/system/bin/liquidsoap /usr/bin/liquidsoap
+
+# to get better logging
+RUN apt-get install -y --no-install-recommends python-pip python-setuptools python-wheel && \
+    pip install supervisor-stdout
+
+ARG CFG_RECOPY_FLAG=false
 
 COPY bootstrap/entrypoint.sh bootstrap/add-to-cron.txt bootstrap/firstrun.sh /opt/libretime/
 COPY config/supervisor-minimal.conf /etc/supervisor/conf.d/supervisord.conf
