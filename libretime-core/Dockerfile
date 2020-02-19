@@ -53,7 +53,8 @@ RUN apt-get install -y \
 ENV LIBRETIME_GIT_REPO=https://github.com/NMT-KTECH/libretime.git
 
 #ENV LIBRETIME_BRANCH=3.0.0-alpha.8
-ENV LIBRETIME_BRANCH=ktech-stable
+#ENV LIBRETIME_BRANCH=ktech-stable
+ENV LIBRETIME_BRANCH=ktek-stable-autodj
 
 
 # Pull down libretime sources
