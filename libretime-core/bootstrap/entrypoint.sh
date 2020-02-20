@@ -40,6 +40,7 @@ function apacheFixes() {
         sed -i 's^.*</VirtualHost>.*^  # Quick fix for iframes and assets that load the EXTERNAL_HOSTNAME without a port.\n  # BEGIN:WEBPORTFIX--\n    <Location "/">\n      SetOutputFilter SUBSTITUTE;DEFLATE\n      AddOutputFilterByType SUBSTITUTE text/html\n      Substitute "s|'$EXTERNAL_HOSTNAME'/embed|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'/embed|ni"\n      Substitute "s|'$EXTERNAL_HOSTNAME'/js|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'/js|ni"\n      Substitute "s|'$EXTERNAL_HOSTNAME'//css|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'//css|ni"\n      Substitute "s|'$EXTERNAL_HOSTNAME'/css|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'/css|ni"\n      Substitute "s|'$EXTERNAL_HOSTNAME'/widgets|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'/widgets|ni"\n      Substitute "s|'$EXTERNAL_HOSTNAME'/api|'$EXTERNAL_HOSTNAME':'$WEB_UI_PORT'/api|ni"\n    </Location>\n&^' "$AIRTIME_APACHE_CONFIG"
 
         a2enmod substitute
+        a2enmod rewrite
     fi
 }
 
