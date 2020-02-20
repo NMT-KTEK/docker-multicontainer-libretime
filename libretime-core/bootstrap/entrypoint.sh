@@ -29,7 +29,19 @@ function setConfigFromEnvironments {
 
     # Make sure we can write to the config directory
     chmod 777 /etc/airtime/
+
+    #set the timezone
+    settimezone
 }
+
+function settimezone() {
+    if [ -z "$STATE" ]; then
+        timedatectl set-timezone $SERVER_TIMEZONE
+    else
+        timedatectl set-timezone Etc/UTC
+    fi 
+}
+
 
 function apacheFixes() {
 
