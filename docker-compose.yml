@@ -149,6 +149,7 @@ services:
      #- ${ICECAST_CONFIG_FILE-./libretime-icecast/config/icecast-example.xml}:/etc/icecast.xml
       # Same mapping as the Libretime Localmusic... (so we can auto-play MP3's from libretieme when the stream disconnects...)
       - ${LOCAL_MUSIC_MAPPING-./localmusic}:/external-media
+      - ${PWD}/tmp/ezstream_playlist.m3u:/etc/ezstream_playlist.m3u
 
     networks:
       - libretime-internal

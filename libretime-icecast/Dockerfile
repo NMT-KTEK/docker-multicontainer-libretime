@@ -31,6 +31,7 @@ COPY config/icecast.xml config/ezstream_mp3.xml /etc/
 COPY bootstrap/* /
 COPY config/supervisor-icecast.conf /etc/supervisor/conf.d/supervisor-icecast.conf
 COPY config/supervisord.conf /etc/supervisor/supervisord.conf
+COPY customisations/nowplaying.xsl /usr/share/icecast/web/nowplaying.xsl
 
 RUN chmod +x /entrypoint.sh && chmod +x /playlist-builder.sh && \
     chmod 0755 /etc/ezstream_mp3.xml && \
@@ -38,6 +39,8 @@ RUN chmod +x /entrypoint.sh && chmod +x /playlist-builder.sh && \
     mkdir -p /usr/share/icecast && mkdir -p /var/log/icecast && \
     mkdir -p /external-media && chmod 777 /external-media && \
     crontab /add-to-cron.txt
+
+RUN touch /etc/ezstream_playlist.m3u
 
 EXPOSE 8000
 VOLUME ["/var/log/icecast"]

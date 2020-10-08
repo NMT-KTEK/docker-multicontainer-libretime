@@ -35,10 +35,17 @@ function setConfigFromEnvironments {
 }
 
 function settimezone() {
-    if [ -z "$STATE" ]; then
-        timedatectl set-timezone $SERVER_TIMEZONE
+    echo "BOOTSTRAP: Setting Time Zone; SERVER_TIMEZONE = $SERVER_TIMEZONE"
+    if [ -z "$SERVER_TIMEZONE" ]; then 
+        echo "BOOTSTRAP: SERVER_TIMEZONE not set; defauting to Etc/UTC"
+        echo "Etc/UTC" > /etc/timezone
+        ln -snf /usr/share/zoneinfo/Etc/UTC /etc/localtime
+        dpkg-reconfigure -f noninteractive tzdata
     else
-        timedatectl set-timezone Etc/UTC
+        echo "BOOTSTRAP: Time Zone will be set to $SERVER_TIMEZONE"
+        echo "$SERVER_TIMEZONE" > /etc/timezone
+        ln -snf /usr/share/zoneinfo/$SERVER_TIMEZONE /etc/localtime  
+        dpkg-reconfigure -f noninteractive tzdata      
     fi 
 }
 

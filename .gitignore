@@ -6,3 +6,4 @@ Thumbs.db
 thumbs.db
 .env
 logs/
+tmp/ezstream_playlist.m3u

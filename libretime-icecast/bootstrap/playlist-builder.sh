@@ -10,12 +10,12 @@ function pullCCMedia() {
     # There's no fallback media - Let's just use some Creative Commons Media for now...
     git clone https://github.com/ned-kelly/moh-cc.git /opt/cc-media/
 
-    FALLBACK_MEDIA=`find /opt/cc-media/ -type f -name *.mp3`
+    FALLBACK_MEDIA=`find /opt/cc-media/ -type f -iname *.mp3`
     echo "$FALLBACK_MEDIA" > /etc/ezstream_playlist.m3u
 
 }
 
-FALLBACK_MEDIA=`find /external-media/imported -type f -name *.mp3 ! -name *NOAUTO*`
+FALLBACK_MEDIA=`find /external-media/imported -type f -name *.mp3 ! -name *NOAUTO* ! -name "*Bob Ross*" ! -iname *explicit*  ! -path *Explicit*`
 if [ $? -eq 0 ]; then
     if [[ $(echo "$FALLBACK_MEDIA" | wc -l) -ge 0 ]];then
         # There's already imported tracks from Libretime - Let's use them for our fallback stream...

@@ -50,6 +50,14 @@ RUN apt-get install -y \
         php-bcmath \
         php-mbstring
 
+# force pip upgrade -> then setup tools -> get better logging
+RUN apt-get install -y --no-install-recommends python python-pip python-wheel && \
+    pip install --upgrade pip
+
+RUN pip install setuptools && \
+    pip install supervisor-stdout
+
+
 ENV LIBRETIME_GIT_REPO=https://github.com/NMT-KTECH/libretime.git
 
 #ENV LIBRETIME_BRANCH=3.0.0-alpha.8
@@ -131,10 +139,6 @@ RUN apt-get remove liquidsoap -y && \
     # run this as root to make liquidsoap your default on the whole system (extremely hacky)
     echo "eval \`opam config env --root=/usr/local/opam\`" > /etc/profile.d/liquidsoap-opam.sh && \
     ln -s /usr/local/opam/system/bin/liquidsoap /usr/bin/liquidsoap
-
-# to get better logging
-RUN apt-get install -y --no-install-recommends python-pip python-setuptools python-wheel && \
-    pip install supervisor-stdout
 
 ARG CFG_RECOPY_FLAG=false
 
