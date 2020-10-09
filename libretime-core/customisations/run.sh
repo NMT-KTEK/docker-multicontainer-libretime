@@ -14,7 +14,7 @@ SCRIPT_PWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # Example: Change background image with a new custom background...
 
-BACKGROUND_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/img/background-testing-3.jpg"
+BACKGROUND_FILE="/opt/libretime/airtime_mvc/public/css/radio-page/img/background-testing-3.jpg"
 rm -rf "$BACKGROUND_FILE"
 #cp "$SCRIPT_PWD/login-background.jpg" "$BACKGROUND_FILE"
 cp "$SCRIPT_PWD/Fiverr(3).jpg" "$BACKGROUND_FILE"
@@ -24,8 +24,8 @@ chown www-data:www-data "$BACKGROUND_FILE"
 
 # Example: Add in custom CSS to the login/homepage only..
 
-HOMEPAGE_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/index/index.phtml"
-CSS_CUSTOM_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/custom.css"
+HOMEPAGE_TEMPLATE="/opt/libretime/airtime_mvc/application/views/scripts/index/index.phtml"
+CSS_CUSTOM_FILE="/opt/libretime/airtime_mvc/public/css/radio-page/custom.css"
 CSS_STRING='<link href="/css/radio-page/custom.css" rel="stylesheet" type="text/css" />'
 
 if ! grep -q "$CSS_STRING" "$HOMEPAGE_TEMPLATE"
@@ -42,8 +42,8 @@ chown www-data:www-data "$CSS_CUSTOM_FILE"
 # EDIT HOPAGE EMBEDED PLAYER CSS
 # USE ICECAST NOW PLAYING WITH AUTODJ RUNNNG
 
-PLAYER_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/embed/player.phtml"
-CSS_CUSTOM_PLAYER_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/custom_player.css"
+PLAYER_TEMPLATE="/opt/libretime/airtime_mvc/application/views/scripts/embed/player.phtml"
+CSS_CUSTOM_PLAYER_FILE="/opt/libretime/airtime_mvc/public/css/radio-page/custom_player.css"
 PATCH_STRING_PLAYER='<link href="/css/radio-page/custom_player.css" rel="stylesheet" type="text/css" />'
 
 PLAYER_JS_REPLACE_CONTENT=`cat $SCRIPT_PWD/playermetadata.js`
@@ -52,12 +52,12 @@ echo "BOOTSTRAP: Begining Patch Process"
 if ! grep -q "$PATCH_STRING_PLAYER" "$PLAYER_TEMPLATE"
 then
     # Only add in CSS if it's not yet in the file...
-    # adding at line 368
+    # adding at line 239
     echo "BOOTSTRAP: Patching player CSS"
-    sed -i "368i\ \n $PATCH_STRING_PLAYER" "$PLAYER_TEMPLATE"
+    sed -i "239i\ \n $PATCH_STRING_PLAYER" "$PLAYER_TEMPLATE"
 
-    echo "BOOTSTRAP: Patching Plyer autoDJ metadata"
-    awk -v r="$PLAYER_JS_REPLACE_CONTENT" 'NR==309 { $0=r }1' "$PLAYER_TEMPLATE" > ./tmp_player.phtml && mv ./tmp_player.phtml "$PLAYER_TEMPLATE"
+    # echo "BOOTSTRAP: Patching Plyer autoDJ metadata"
+    # awk -v r="$PLAYER_JS_REPLACE_CONTENT" 'NR==309 { $0=r }1' "$PLAYER_TEMPLATE" > ./tmp_player.phtml && mv ./tmp_player.phtml "$PLAYER_TEMPLATE"
 fi
 
 cp "$SCRIPT_PWD/player-custom.css" "$CSS_CUSTOM_PLAYER_FILE"
@@ -67,8 +67,8 @@ chown www-data:www-data "$CSS_CUSTOM_PLAYER_FILE"
 
 # EDIT HOMEPAGE EMBEDED SCHEDULE CSS
 
-SCHEDULE_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/embed/weekly-program.phtml"
-CSS_CUSTOM_SCHEDULE_FILE="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/custom_schedule.css"
+SCHEDULE_TEMPLATE="/opt/libretime/airtime_mvc/application/views/scripts/embed/weekly-program.phtml"
+CSS_CUSTOM_SCHEDULE_FILE="/opt/libretime/airtime_mvc/public/css/radio-page/custom_schedule.css"
 CSS_STRING_SCHEDULE='<link href="/css/radio-page/custom_schedule.css" rel="stylesheet" type="text/css" />'
 
 if ! grep -q "$CSS_STRING_SCHEDULE" "$SCHEDULE_TEMPLATE"
@@ -84,7 +84,7 @@ chown www-data:www-data "$CSS_CUSTOM_SCHEDULE_FILE"
 
 # PATCH player bar images
 
-PLAYER_IMAGE_FOLDER="/usr/share/airtime/php/airtime_mvc/public/css/radio-page/img"
+PLAYER_IMAGE_FOLDER="/opt/libretime/airtime_mvc/public/css/radio-page/img"
 
 declare -a img_arr=("play" "pause" "schedule" "about_us" "podcast" "rss" "login" "login-small")
 
@@ -100,41 +100,41 @@ done
 
 
 # Example: Add Google Analytics tracking on the homepage...
-HOMEPAGE_TEMPLATE="/usr/share/airtime/php/airtime_mvc/application/views/scripts/index/index.phtml"
-GA_SITE_TAG='<!-- GA-SITE-TAG -->'
+# HOMEPAGE_TEMPLATE="/opt/libretime/airtime_mvc/application/views/scripts/index/index.phtml"
+# GA_SITE_TAG='<!-- GA-SITE-TAG -->'
 
-# Update this with your real Google Analytics Site ID
-GA_SITE_ID="UA-126119626-1"
+# # Update this with your real Google Analytics Site ID
+# GA_SITE_ID="UA-126119626-1"
 
-if ! grep -q "$GA_SITE_TAG" "$HOMEPAGE_TEMPLATE"
-then
+# if ! grep -q "$GA_SITE_TAG" "$HOMEPAGE_TEMPLATE"
+# then
 
-    # Only add in GA Javascript if it's not yet in the file...
-    echo '<!-- GA-SITE-TAG -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126119626-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag("js", new Date());
+#     # Only add in GA Javascript if it's not yet in the file...
+#     echo '<!-- GA-SITE-TAG -->
+#     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126119626-1"></script>
+#     <script>
+#       window.dataLayer = window.dataLayer || [];
+#       function gtag(){dataLayer.push(arguments);}
+#       gtag("js", new Date());
 
-      gtag("config", "'"$GA_SITE_ID"'");
-    </script>' >> "$HOMEPAGE_TEMPLATE"
+#       gtag("config", "'"$GA_SITE_ID"'");
+#     </script>' >> "$HOMEPAGE_TEMPLATE"
 
-fi
+# fi
 
 
-# Example: Change CSS Colours with the schedule/calendar on the login page
-WEEKLY_PROGRAM="/usr/share/airtime/php/airtime_mvc/application/views/scripts/embed/weekly-program.phtml"
-WEEKLY_PROGRAM_TAG='<!-- IFRAME-CSS-ADDITIONS -->'
+# # Example: Change CSS Colours with the schedule/calendar on the login page
+# WEEKLY_PROGRAM="/opt/libretime/airtime_mvc/application/views/scripts/embed/weekly-program.phtml"
+# WEEKLY_PROGRAM_TAG='<!-- IFRAME-CSS-ADDITIONS -->'
 
-if ! grep -q "$WEEKLY_PROGRAM_TAG" "$WEEKLY_PROGRAM"
-then
+# if ! grep -q "$WEEKLY_PROGRAM_TAG" "$WEEKLY_PROGRAM"
+# then
 
-    # Only add in GA Javascript if it's not yet in the file...
-    echo '<!-- IFRAME-CSS-ADDITIONS -->
-    <link type="text/css" rel="Stylesheet" href="/assets/css/schedule.css" />
-    ' >> "$WEEKLY_PROGRAM"
+#     # Only add in GA Javascript if it's not yet in the file...
+#     echo '<!-- IFRAME-CSS-ADDITIONS -->
+#     <link type="text/css" rel="Stylesheet" href="/assets/css/schedule.css" />
+#     ' >> "$WEEKLY_PROGRAM"
 
-fi
+# fi
 
 echo "BOOTSTRAP: Finishing Patch Process"

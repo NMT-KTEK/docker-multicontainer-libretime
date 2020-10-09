@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "libretime-db",
+            "database": "libretime",
+            "username": "libretime",
+            "password": "pluqcAU6FxwlUOYEX9eAfCxWWb4H7Z7l4zNRIOKyo"
+        }
+    ]
+}

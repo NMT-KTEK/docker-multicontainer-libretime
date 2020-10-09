@@ -15,6 +15,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
         nano \
         supervisor \
         curl \
+        cron \
         wget \
         crudini \
         git
@@ -40,6 +41,10 @@ ENV LANGUAGE=en_US.UTF-8
 
 # Libretime's "--install" flag will also add any missing packages...
 RUN apt-get install -y \
+        gstreamer1.0-plugins-base \
+        gstreamer1.0-plugins-good \
+        gstreamer1.0-plugins-bad \
+        gstreamer1.0-plugins-ugly \
         php7.0-curl \
         php7.0-pgsql \
         apache2 \
@@ -57,29 +62,6 @@ RUN apt-get install -y --no-install-recommends python python-pip python-wheel &&
 RUN pip install setuptools && \
     pip install supervisor-stdout
 
-
-ENV LIBRETIME_GIT_REPO=https://github.com/NMT-KTECH/libretime.git
-
-#ENV LIBRETIME_BRANCH=3.0.0-alpha.8
-#ENV LIBRETIME_BRANCH=ktech-stable
-ENV LIBRETIME_BRANCH=ktek-stable-autodj
-
-
-# Pull down libretime sources
-ARG LIBRETIME_VER=3.0.0.alpha.ktech_stable
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    git clone --depth=1 --branch ${LIBRETIME_BRANCH} --single-branch ${LIBRETIME_GIT_REPO}  /opt/libretime && \
-    SYSTEM_INIT_METHOD=`readlink --canonicalize -n /proc/1/exe | rev | cut -d'/' -f 1 | rev` && \
-    sed -i -e 's/\*systemd\*)/\*'"$SYSTEM_INIT_METHOD"'\*)/g' /opt/libretime/install && \
-    echo "SYSTEM_INIT_METHOD: [$SYSTEM_INIT_METHOD]" && \
-    #
-    # We need to patch Liquidsoap for 1.3.x support (the current libretime builds only has 1.1.1 support)... 
-    # for < 3.0.0-alpha.7
-    #cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3.0.patch | patch -p1 && \
-    # for >= 3.0.0-alpha.7
-    cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3-for-3.0.0-alpha.7.patch | patch -p1 && \
-    bash -c 'cd /opt/libretime; ./install --distribution=ubuntu --release=xenial_docker_minimal --force --apache --no-postgres --no-rabbitmq; exit 0'; exit 0
-
 # This will be mapped in with all the media...
 RUN mkdir -p /external-media/ && \
     chmod 777 /external-media/
@@ -94,6 +76,32 @@ RUN cd /opt && curl -s -O -L https://dl.google.com/go/go1.10.1.linux-amd64.tar.g
     export PATH=$GOPATH/bin:$GOROOT/bin:$PATH && \
     go get github.com/jpillora/go-tcp-proxy/cmd/tcp-proxy && \
     rm -rf /opt/go1.*.tar.gz
+
+
+ENV LIBRETIME_GIT_REPO=https://github.com/NMT-KTECH/libretime.git
+
+#ENV LIBRETIME_BRANCH=3.0.0-alpha.8
+#ENV LIBRETIME_BRANCH=ktech-stable
+# ENV LIBRETIME_BRANCH=ktek-stable-autodj
+ENV LIBRETIME_BRANCH=ktech-unstable
+
+
+# Pull down libretime sources
+ARG LIBRETIME_VER=3.0.0.beta.9.ktech_unstable
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    git clone --depth=1 --branch ${LIBRETIME_BRANCH} --single-branch ${LIBRETIME_GIT_REPO}  /opt/libretime && \
+    SYSTEM_INIT_METHOD=`readlink --canonicalize -n /proc/1/exe | rev | cut -d'/' -f 1 | rev` && \
+    sed -i -e 's/\*systemd\*)/\*'"$SYSTEM_INIT_METHOD"'\*)/g' /opt/libretime/install && \
+    echo "SYSTEM_INIT_METHOD: [$SYSTEM_INIT_METHOD]" && \
+    #
+    # We need to patch Liquidsoap for 1.3.x support (the current libretime builds only has 1.1.1 support)... 
+    # for < 3.0.0-alpha.7
+    #cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3.0.patch | patch -p1 && \
+    # for >= 3.0.0-alpha.7
+    # cd /opt/libretime && curl -L https://github.com/LibreTime/libretime/compare/master...radiorabe:feature/liquidsoap-1.3-for-3.0.0-alpha.7.patch | patch -p1 && \
+    touch /tmp/icecast_pass && \
+    bash -c 'cd /opt/libretime; ./install --verbose --distribution=ubuntu --release=xenial_docker_minimal --force --apache --no-postgres --no-rabbitmq --in-place; exit 0'; exit 0
+
 
 # Remove PostgreSQL and RMQ other packages that were installed by the "Libretime Setup Script" -- before building Silian ...
 RUN apt-get remove -y postgresql-9.5 rabbitmq-server icecast2 silan
@@ -134,11 +142,12 @@ RUN apt-get remove liquidsoap -y && \
     # run this as root after running an additional eval `opam config env --root=/usr/local/opam`
     #
     su - liquidsoap -c "eval `opam config env --root=/usr/local/opam` \
-        export OPAMYES=yes && opam depext alsa cry fdkaac lame liquidsoap mad opus taglib vorbis --yes ; \
-        export OPAMYES=yes && opam install alsa cry fdkaac lame liquidsoap mad opus taglib vorbis --yes" && \  
+        export OPAMYES=yes && opam depext alsa cry faad fdkaac lame liquidsoap mad opus taglib vorbis --yes ; \
+        export OPAMYES=yes && opam install alsa cry faad fdkaac lame liquidsoap mad opus taglib vorbis --yes" && \  
     # run this as root to make liquidsoap your default on the whole system (extremely hacky)
     echo "eval \`opam config env --root=/usr/local/opam\`" > /etc/profile.d/liquidsoap-opam.sh && \
     ln -s /usr/local/opam/system/bin/liquidsoap /usr/bin/liquidsoap
+
 
 ARG CFG_RECOPY_FLAG=false
 
